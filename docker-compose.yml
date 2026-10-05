@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cpt-postgres
+    environment:
+      POSTGRES_DB: competitive_programming_tracker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Noob1290@#
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d competitive_programming_tracker"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cpt-backend
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/competitive_programming_tracker
+      DB_USERNAME: postgres
+      DB_PASSWORD: Noob1290@#
+      JWT_SECRET: CompetitiveProgrammingTrackerSecretKey2026ForDevelopmentOnly
+      CORS_ALLOWED_ORIGINS: "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173"
+      PORT: 8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

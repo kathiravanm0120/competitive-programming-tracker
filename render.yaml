@@ -1,0 +1,31 @@
+services:
+  # Spring Boot Backend Web Service
+  - type: web
+    name: cpt-backend
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    envVars:
+      - key: DB_URL
+        fromDatabase:
+          name: cpt-postgres
+          property: connectionString
+      - key: DB_USERNAME
+        fromDatabase:
+          name: cpt-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: cpt-postgres
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ALLOWED_ORIGINS
+        value: "http://localhost:5173,https://cpt-frontend.vercel.app,https://cpt-frontend.netlify.app"
+
+databases:
+  # Render PostgreSQL Database
+  - name: cpt-postgres
+    databaseName: competitive_programming_tracker
+    user: cpt_user
+    plan: free
